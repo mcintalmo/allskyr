@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source=ammcintosh@nx.csbsju.edu:/net/plasma/allsky/events
-destination=/home/alex/CSBSJU
+destination=.
 options=-azP #-a includes all files, -z compresses the files, 
              #-P shows progress and allows pausing
 exclude=--include '*/' --exclude '*' --prune-empty-dirs #scan subdirectories, but
