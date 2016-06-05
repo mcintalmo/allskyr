@@ -19,7 +19,7 @@ particular, this project looks at data collected by the Saint John's University
   The easiest way to access the GUI alone is to run the following command 
   within R:
 
-  runGitHub("allskyr", "Mcintalmo")
+        runGitHub("allskyr", "Mcintalmo")
 
 ---
 GUI Options:
@@ -27,10 +27,10 @@ GUI Options:
     **Shower Name:** Name of the meteor shower you would like to see.  
     *Default:* Quadrantids
     
-      **Year:** Year of the meteor shower you would like to see.  
+    **Year:** Year of the meteor shower you would like to see.  
     *Default: 2009*
     
-        **Remove Outliers:** Check this if you would like to remove outlying events 
+    **Remove Outliers:** Check this if you would like to remove outlying events 
     from the plot. WANRING: Can take up to 30 seconds to generate a large
     meteor shower.  
     *Default: Unchecked*
