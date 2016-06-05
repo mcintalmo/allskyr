@@ -1,16 +1,17 @@
 allskyr
 =======
 
-Author: Alex McIntosh
+Author: [Alex McIntosh](mcintosh.alex.m@gmail.com)
 ---------------------
-###Based on programs from the College of Saint Benedict  
-###and Saint John's University
+*Based on programs from the College of Saint Benedict and Saint John's University*
 
 Welcome to the allskyr project. This project includes R functions and an 
 accompanying Shiny app for determining the radiant of meteor showers detected
 by [Rob Weryk's ASGARD](http://meteor.uwo.ca/~weryk/asgard/) software. In 
-particular, this project looks at data collected by the Saint John's University 
-(in Collegeville, MN) allsky camera.
+particular, this project looks at data collected by the 
+[Saint John's University allsky camera]
+(http://www.users.csbsju.edu/~jcrumley/allsky/) 
+allsky camera, maintained by Jim Crumley.
 
 ---
 **Running the GUI:**
@@ -21,7 +22,7 @@ particular, this project looks at data collected by the Saint John's University
         runGitHub("allskyr", "Mcintalmo")
 
 ---
-**GUI Options:**
+###GUI Options:
   
   **Shower Name:** Name of the meteor shower you would like to see.  
     *Default:* Quadrantids
@@ -43,15 +44,21 @@ particular, this project looks at data collected by the Saint John's University
     
   **Generate Plot:** Generate the plot given the input provided.  
   
-**New Class:**
+---
+###Known bugs:
+
+---
+###To do:
+
+---
+###New Class:
   **Event** - Holds information pulled from event files.  
 
-**Included Functions:**
+---
+###Included Functions:
 
-  BASH: 
-    txt_rsync.sh - Syncs SJU events to the current working directory.
-  
-  R:
+  **txt_rsync.sh** - (BASH) Syncs SJU events to the current working directory.
+
   **ensure.package** - Ripped straight from Introduction to Data Science by 
     Jeffrey M. Stanton
     
