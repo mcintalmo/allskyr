@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "numeric.date <- function(date, format, tz = \"UTC\"){\n  date <- strptime(date, format, tz = tz)\n  date <- strftime(date, \"%Y%m%d\", tz = \"UTC\")\n  date <- as.numeric(date)\n  return(date)\n}\n\nfind.events <- function(start.date, end.date = NULL, events, \n                        format = \"%Y%m%d\", tz = \"UTC\"){\n  if(is.null(end.date) && length(start.date) == 2){\n    end.date <- start.date[[2]]\n    start.date <- start.date[[1]]\n  }\n  else if(length(start.date) != 1){\n    stop(\"Invalid length of start.date in shower.R \")\n  }\n  else if(length(end.date) != 1){\n    stop(\"Invalid length of end.date in shower.R \")\n  }\n  \n  start.date <- numeric.date(start.date, format, tz = tz)\n  end.date <- numeric.date(end.date, format, tz = tz)\n  event.dates <- as.numeric(event.calendar.date(events))\n  \n  return(events[(event.dates > start.date) & (event.dates < end.date)])\n}\n\nfind.shower <- function(name, year, showers){\n  return(showers[(((name == showers$name) | (name == showers$abbrev) | name == showers$number) \n                  & year == substr(showers$start.date, 1, 4)),])\n}\n\nshower.radiant <- function(events){\n  shower.radiant <- c()\n  if(length(events) < 2){\n    shower.radiant <- data.frame(0,0)\n  }\n  else{\n    for(i in 2:length(events)){\n      shower.radiant <- rbind(shower.radiant, t(radiant(events[[i]], events[[i - 1]])))\n    }\n    shower.radiant <- as.data.frame(shower.radiant)\n  }\n  names(shower.radiant) <- c(\"ra\", \"dec\")\n  return(shower.radiant)\n}",
+    "created" : 1512076645524.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3060170885",
+    "id" : "775341C6",
+    "lastKnownWriteTime" : 1512492964,
+    "last_content_update" : 1512492964474,
+    "path" : "E:/Alex/Documents/GitHub/allskyr/shower.R",
+    "project_path" : "shower.R",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

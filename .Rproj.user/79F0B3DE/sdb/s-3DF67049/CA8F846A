@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "allskyr\n=======\n\nAuthor: [Alex McIntosh](mcintosh.alex.m@gmail.com)\n---------------------\n*Based on programs from the College of Saint Benedict and Saint John's University*\n\nWelcome to the allskyr project. This project includes R functions and an \naccompanying Shiny app for determining the radiant of meteor showers detected\nby [Rob Weryk's ASGARD](http://meteor.uwo.ca/~weryk/asgard/) software. In \nparticular, this project looks at data collected by the \n[Saint John's University allsky camera]\n(http://www.users.csbsju.edu/~jcrumley/allsky/) \nallsky camera, maintained by Jim Crumley.\n\n---\n**Running the GUI:**\n\n  The easiest way to access the GUI alone is to run the following command \n  within R:\n\n        runGitHub(\"allskyr\", \"Mcintalmo\")\n\n---\n###GUI Options:\n  \n  **Shower Name:** Name of the meteor shower you would like to see.  \n    *Default:* Quadrantids\n    \n  **Year:** Year of the meteor shower you would like to see.  \n    *Default: 2009*\n    \n  **Remove Outliers:** Check this if you would like to remove outlying events \n    from the plot. WANRING: Can take up to 30 seconds to generate a large\n    meteor shower.  \n    *Default: Unchecked*\n    \n  **IQR:** Strictness of outlier detection. Smaller numbers remove more events.  \n    *Default: 1.5*\n    \n  **Number of Bins:** Number of bins to be used for determining the shower \n    radiant.  \n    *Default: 25*\n    \n  **Generate Plot:** Generate the plot given the input provided.  \n  \n---\n###Known bugs:\n\n---\n###To do:\n\n---\n###New Class:\n  **Event** - Holds information pulled from event files.  \n\n---\n###Included Functions:\n\n  **txt_rsync.sh** - (BASH) Syncs SJU events to the current working directory.\n\n  **ensure.package** - Ripped straight from Introduction to Data Science by \n    Jeffrey M. Stanton\n    \n  **update.events**\n  \n  **load.events**\n  \n  **update.showers**\n  \n  **load.showers**\n  \n  **norm**\n  \n  **normalize**\n  \n  **cross.product**\n  \n  **equatorial.to.cartesian**\n  \n  **radiant**\n  \n  **numeric.date**\n  \n  **find.events**\n  \n  **find.shower**\n  \n  **shower.radiant**\n  \n  **iqr.threshold**\n  \n  **mode2d**\n  \n  **center.on.point**\n  \n  **outlier.trim**\n  \n  **event.name**\n  \n  **event.file**\n  \n  **event.version**\n  \n  **event.num_fr**\n  \n  **event.date**\n  \n  **event.unix**\n  \n  **event.ntp**\n  \n  **event.seq0**\n  \n  **event.mul**\n  \n  **event.site**\n  \n  **event.latlon**\n  \n  **event.text**\n  \n  **event.plate**\n  \n  **event.geom**\n  \n  **event.reject**\n  \n  **event.fr**\n  \n  **event.time**\n  \n  **event.sum**\n  \n  **event.seq**\n  \n  **event.cx**\n  \n  **event.cy**\n  \n  **event.th**\n  \n  **event.phi**\n  \n  **event.lsp**\n  \n  **event.mag**\n  \n  **event.flag**\n  \n  **event.alt**\n  \n  **event.az**\n  \n  **event.julian.date**\n  \n  **event.ra**\n  \n  **event.dec**\n  \n  **event.ha**\n  \n  **event.equatorial**\n  \n  **event.start.equatorial**\n  \n  **event.end.equatorial**\n  \n  **event.year**\n  \n  **event.month**\n  \n  **event.day**\n  \n  **event.hour**\n  \n  **event.minute**\n  \n  **event.second**\n  \n  **event.calendar.date**\n  \n  **event.clock.time**\n  \n  **event.get**\n",
+    "created" : 1512478623681.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3683388483",
+    "id" : "CA8F846A",
+    "lastKnownWriteTime" : 1511916163,
+    "last_content_update" : 1511916163,
+    "path" : "E:/Alex/Documents/GitHub/allskyr/README.md",
+    "project_path" : "README.md",
+    "properties" : {
+    },
+    "relative_order" : 9,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "markdown"
+}

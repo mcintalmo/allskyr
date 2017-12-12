@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "iqr.threshold <- function(x, multiplier = 1.5){\n  quartiles <- quantile(x)\n  \n  lower.quartile <- quartiles[[2]]\n  upper.quartile <- quartiles[[4]]\n  iqr <- IQR(x)\n  \n  lower.threshold <- lower.quartile - (iqr * multiplier)\n  upper.threshold <- upper.quartile + (iqr * multiplier)\n  return(data.frame(lower = lower.threshold, upper = upper.threshold))\n}\n\nmode2d <- function(hist){\n  mode <- which(hist$counts == max(hist$counts), arr.ind = TRUE)\n  \n  ra.mode <- hist$x[mode[[1]]]\n  dec.mode <- hist$y[mode[[2]]]\n  return(data.frame(ra = ra.mode, dec = dec.mode))\n}\n\ncenter.on.point <- function(x, point, center = 180, wrap = TRUE){\n  if(wrap){\n    x <- (x + center - point) %% (2 * center)\n  }\n  else{\n    x <- x + center - point\n  }\n  return(x)\n}\n\noutlier.trim <- function(events, radiants, mode = NULL, nbins = 25, ...){\n  if(is.null(mode)){\n    radiant.hist <- hist2d(radiants, nbins = nbins, show = FALSE, ...)\n    mode <- mode2d(radiant.hist)\n  }\n  \n  radiants$ra <- center.on.point(radiants$ra, mode$ra, center = 180, \n                                 wrap = TRUE)\n  \n  ra.threshold <- iqr.threshold(radiants$ra, ...)\n  dec.threshold <- iqr.threshold(radiants$dec, ...)\n  \n  \n  outliers <- which((radiants$ra < ra.threshold$lower) | \n                    (radiants$ra > ra.threshold$upper) | \n                    (radiants$dec < dec.threshold$lower) | \n                    (radiants$dec > dec.threshold$upper))\n  \n  shift <- c(outliers[-1], outliers[[1]])\n  \n  outliers <- outliers[outliers + 1 == shift]\n  \n  return(events[-outliers])\n}",
+    "created" : 1511916325067.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1365985143",
+    "id" : "520EFE4F",
+    "lastKnownWriteTime" : 1511916169,
+    "last_content_update" : 1511916169,
+    "path" : "E:/Alex/Documents/GitHub/allskyr/outlier.R",
+    "project_path" : "outlier.R",
+    "properties" : {
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

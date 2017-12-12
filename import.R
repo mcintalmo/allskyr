@@ -78,12 +78,14 @@ update.showers <- function(shower.file = c("./showers/shower_calendar_2010.txt",
     if(is.null(year)){
       year <- str_extract(file, "(?<=\\_)[0-9]{4}")
     }
+    #raw.data <- readLines(file, encoding = "UTF-8")
     raw.data <- readLines(file)
     names <- str_match(raw.data, ".*(?= \\()")
+    numbers <- str_match_all(raw.data, "[0-9]{3}(?= [A-Z])")
     abbrevs <- str_match_all(raw.data, "[A-Z]{3}(?=\\))")
     months <- str_match_all(raw.data, "[A-Z][a-z]{2}(?= )")
     values <- str_extract_all(raw.data, "\\+*\\-*[0-9]+\\.*[0-9]*")
-    data <- sapply(1:length(raw.data), function(i, names, abbrevs, months, values, year){
+    data <- sapply(1:length(raw.data), function(i, names, numbers, abbrevs, months, values, year){
       month.number = c("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12")
       
       if(nchar(values[[i]][[1]]) > 2){
@@ -141,14 +143,15 @@ update.showers <- function(shower.file = c("./showers/shower_calendar_2010.txt",
       else{
         zhr <- values[[i]][[9]]
       }
-      return(c(names[[i]], abbrevs[[i]], start.date, end.date, peak.date, 
+      
+      return(c(names[[i]], numbers[[i]], abbrevs[[i]], start.date, end.date, peak.date, 
                gamma, theo.ra, theo.dec, v, r, zhr))
       
-    }, names, abbrevs, months, values, year)
+    }, names, numbers, abbrevs, months, values, year)
   
     data <- as.data.frame(t(data), stringsAsFactors = FALSE)
     
-    names(data) <- c("name", "abbrev", "start.date", "end.date", "peak.date", 
+    names(data) <- c("name", "number", "abbrev", "start.date", "end.date", "peak.date", 
                      "gamma", "theo.ra", "theo.dec", "v", "r", "zhr")
     
     return(data)

@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "library(shiny)\n\nshinyServer(function(input, output){\n  \n  source(\"initiate.R\")\n  \n  events <- load.events()\n  showers <- load.showers()\n  \n  data <- reactiveValues(shower = NULL, shower.events = NULL, radiants = NULL,\n                         n.events = NULL, n.outliers = NULL)\n  \n  observeEvent(input$generate,{\n    \n    print(str_match(input$name, \".*(?= \\\\()\"))\n    data$shower <- find.shower(str_match(input$name, \"[A-Z]{3}(?=\\\\))\")[[1]], input$year, showers)\n    print(input$name)\n    print(str_match(input$name, \"[A-Z]{3}(?=\\\\))\")[[1]])\n    print(input$year)\n    print(data$shower)\n    print(identical(data$shower$name, character(0)))\n    if(identical(data$shower$name, character(0))){\n      data$n.events <- 0\n      return()\n    }\n    data$shower.events <- find.events(data$shower$start.date,\n                                      data$shower$end.date, \n                                      events)\n    data$radiants <- shower.radiant(data$shower.events)\n    \n    data$n.events <- length(data$shower.events)\n    \n    if(input$remove.outliers){\n      data$shower.events <- outlier.trim(data$shower.events,\n                                        data$radiants,\n                                        nbins = input$nbins,\n                                        multiplier = input$iqr)\n      \n      data$radiants <- shower.radiant(data$shower.events)\n      \n      data$n.outliers <- data$n.events - length(data$shower.events)\n    }\n  })\n  \n  output$radiant.plot <- renderPlot({\n    if(is.null(data$shower) || is.null(data$shower.events) \n       || is.null(data$radiants) || data$n.events < 2) {\n      return()\n    }\n    \n    shower <- data$shower\n    shower.events <- data$shower.events\n    radiants <- data$radiants\n    \n    ggplot(radiants, aes(radiants$ra, radiants$dec)) + \n      stat_bin2d(bins = input$nbins) + \n      ggtitle(paste(substr(shower$start.date, 1, 4), \" \", shower$name, \n                    \" (\", shower$number, \" \", shower$abbrev, \") \", sep = \"\")) + \n      labs(x = \"Radiant (Degrees)\", y = \"Declination (Degrees)\")\n  })\n  \n  output$shower.info <- renderTable(\n    if(is.null(data$shower) || is.null(data$radiants) || data$n.events < 3){\n      return()\n    } \n    else{\n      radiant.hist <- hist2d(data$radiants, nbins = input$nbins, show = FALSE)\n      cbind(data$shower[c(\"name\", \"number\", \"abbrev\", \"start.date\", \"end.date\", \"peak.date\", \n                  \"theo.ra\", \"theo.dec\")], mode2d(radiant.hist))\n    }\n  )\n  \n  output$event.info <- renderText(\n    if(is.null(data$n.events)){\n      return()\n    }\n    else{\n      paste(\"Number of events:\", data$n.events)\n    }\n  )\n  \n  output$outlier.info <- renderText(\n    if(!input$remove.outliers || is.null(data$n.outliers)){\n      return()\n    }\n    else{\n      paste(\"Number of outliers:\", data$n.outliers)\n    }\n  )\n  \n  \n  #Mode, number of outliers, shower info\n})",
+    "created" : 1511981422922.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1720511901",
+    "id" : "93E28E76",
+    "lastKnownWriteTime" : 1512530142,
+    "last_content_update" : 1512530142153,
+    "path" : "E:/Alex/Documents/GitHub/allskyr/server.R",
+    "project_path" : "server.R",
+    "properties" : {
+    },
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

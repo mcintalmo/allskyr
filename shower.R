@@ -26,16 +26,21 @@ find.events <- function(start.date, end.date = NULL, events,
 }
 
 find.shower <- function(name, year, showers){
-  return(showers[(((name == showers$name) | (name == showers$abbrev)) 
+  return(showers[(((name == showers$name) | (name == showers$abbrev) | name == showers$number) 
                   & year == substr(showers$start.date, 1, 4)),])
 }
 
 shower.radiant <- function(events){
   shower.radiant <- c()
-  for(i in 2:length(events)){
-    shower.radiant <- rbind(shower.radiant, t(radiant(events[[i]], events[[i - 1]])))
+  if(length(events) < 2){
+    shower.radiant <- data.frame(0,0)
   }
-  shower.radiant <- as.data.frame(shower.radiant)
+  else{
+    for(i in 2:length(events)){
+      shower.radiant <- rbind(shower.radiant, t(radiant(events[[i]], events[[i - 1]])))
+    }
+    shower.radiant <- as.data.frame(shower.radiant)
+  }
   names(shower.radiant) <- c("ra", "dec")
   return(shower.radiant)
 }

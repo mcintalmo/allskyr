@@ -1,4 +1,4 @@
-Quadrantids (010 QUA) Dec 28–Jan 12 Jan 04 283.16 230 +49 41 2.1 120
+﻿Quadrantids (010 QUA) Dec 28–Jan 12 Jan 04 283.16 230 +49 41 2.1 120
 α-Centaurids (102 ACE) Jan 28–Feb 21 Feb 08 319.2 210 -59 56 2.0 6
 γ-Normids (118 GNO) Feb 25–Mar 28 Mar 15 354 239 -50 56 2.4 6
 Lyrids (006 LYR) Apr 16–Apr 25 Apr 22 32.32 271 +34 49 2.1 18

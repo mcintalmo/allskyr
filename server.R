@@ -11,7 +11,18 @@ shinyServer(function(input, output){
                          n.events = NULL, n.outliers = NULL)
   
   observeEvent(input$generate,{
-    data$shower <- find.shower(input$name, input$year, showers)
+    
+    print(str_match(input$name, ".*(?= \\()"))
+    data$shower <- find.shower(str_match(input$name, "[A-Z]{3}(?=\\))")[[1]], input$year, showers)
+    print(input$name)
+    print(str_match(input$name, "[A-Z]{3}(?=\\))")[[1]])
+    print(input$year)
+    print(data$shower)
+    print(identical(data$shower$name, character(0)))
+    if(identical(data$shower$name, character(0))){
+      data$n.events <- 0
+      return()
+    }
     data$shower.events <- find.events(data$shower$start.date,
                                       data$shower$end.date, 
                                       events)
@@ -21,9 +32,9 @@ shinyServer(function(input, output){
     
     if(input$remove.outliers){
       data$shower.events <- outlier.trim(data$shower.events,
-                                         data$radiants,
-                                         nbins = input$nbins,
-                                         multiplier = input$iqr)
+                                        data$radiants,
+                                        nbins = input$nbins,
+                                        multiplier = input$iqr)
       
       data$radiants <- shower.radiant(data$shower.events)
       
@@ -33,7 +44,10 @@ shinyServer(function(input, output){
   
   output$radiant.plot <- renderPlot({
     if(is.null(data$shower) || is.null(data$shower.events) 
-       || is.null(data$radiants)) return()
+       || is.null(data$radiants) || data$n.events < 2) {
+      return()
+    }
+    
     shower <- data$shower
     shower.events <- data$shower.events
     radiants <- data$radiants
@@ -41,17 +55,17 @@ shinyServer(function(input, output){
     ggplot(radiants, aes(radiants$ra, radiants$dec)) + 
       stat_bin2d(bins = input$nbins) + 
       ggtitle(paste(substr(shower$start.date, 1, 4), " ", shower$name, 
-                    " (", shower$abbrev, ") ", sep = "")) + 
-      labs(x = "Radiant (degrees)", y = "Declination (Degrees)")
+                    " (", shower$number, " ", shower$abbrev, ") ", sep = "")) + 
+      labs(x = "Radiant (Degrees)", y = "Declination (Degrees)")
   })
   
   output$shower.info <- renderTable(
-    if(is.null(data$shower) || is.null(data$radiants)){
+    if(is.null(data$shower) || is.null(data$radiants) || data$n.events < 3){
       return()
     } 
     else{
       radiant.hist <- hist2d(data$radiants, nbins = input$nbins, show = FALSE)
-      cbind(data$shower[c("name", "abbrev", "start.date", "end.date", "peak.date", 
+      cbind(data$shower[c("name", "number", "abbrev", "start.date", "end.date", "peak.date", 
                   "theo.ra", "theo.dec")], mode2d(radiant.hist))
     }
   )

@@ -5,9 +5,9 @@ event <- setClass("event",
                             num_fr = "integer", #number of frames of the event
                             date = "POSIXlt", #Date and time at which the event occured
                             unix = "numeric", #unix time at which the event occured
-                            ntp = "character", #UNKOWN
+                            ntp = "character", #UNKNOWN
                             seq0 = "integer", #seq value at time 0
-                            mul = "character", #UNKOWN
+                            mul = "character", #UNKNOWN
                             site = "character", #Site at which the event was recorded (numiercal value)
                             latlon = "numeric", #c(latitude, longitude, elevation)
                             text = "character", #site of the event (string value)
@@ -17,7 +17,7 @@ event <- setClass("event",
                             fr  = "integer", #frame number
                             time = "numeric", #time offset
                             sum  = "integer", #UNKNOWN
-                            seq  = "integer", #UNKOWN
+                            seq  = "integer", #UNKNOWN
                             cx   = "numeric", #x coordinate of the detected meteor pixel
                             cy   = "numeric", #y coordinate of the detected meteor pixel
                             th  = "numeric", #spherical conversion of the x,y coordinates using platefile

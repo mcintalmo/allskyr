@@ -1,3 +1,4 @@
+#Returns the norm of the given vector 
 norm <- function(vector){
   if(class(vector) == "list"){
     return(sapply(vector, function(vector){return(sqrt(sum(vector ^ 2)))}))
@@ -10,6 +11,7 @@ norm <- function(vector){
   }
 }
 
+#Returns the normalized vector
 normalize <- function(vector){
   if(class(vector) == "list"){
     sapply(vector, function(vector){return(vector / norm(vector))})
@@ -22,6 +24,7 @@ normalize <- function(vector){
   }
 }
 
+#Returns the cross product of two vectors
 cross.product <- function(vector1, vector2){
   if((length(vector1) != 3) || (length(vector2) != 3)){
     stop("Invalid dimensions for cross product (D[3] X D[3])")
@@ -34,16 +37,20 @@ cross.product <- function(vector1, vector2){
   return(c(i, j, k))
 }
 
+#Converts from equatorial coordinates to cartesian coordinates
 equatorial.to.cartesian <- function(ra, dec=NULL){
+  #If the data is being passed as a table, break it into two vectors
   if((length(dec) == 0) && (length(ra) == 2)){
     dec <- sapply(ra, function(ra){return(ra[2])})
     ra  <- sapply(ra, function(ra){return(ra[1])})
   } 
+  #If the ha is provided, break it off
   else if(all(names(ra) == c("ra", "dec", "ha"))) {
     dec <- ra$dec
     ha <- ra$ha
     ra <- ra$ra
-  } 
+  }
+  #Null case
   else if((length(ra) == 0) && (length(dec)) == 0){
     return(c(0, 0, 0))
   }
@@ -52,9 +59,9 @@ equatorial.to.cartesian <- function(ra, dec=NULL){
   }
   
   r <- lapply(1:length(ra), function(i, ra, dec){
-    x = sin((90 - dec[[i]]) * pi / 180) * cos(ra[[i]] * pi / 180)
-    y = sin((90 - dec[[i]]) * pi / 180) * sin(ra[[i]] * pi / 180)
-    z = cos((90 - dec[[i]]) * pi / 180)
+    x = cos(dec[[i]] * pi / 180) * cos(ra[[i]] * pi / 180)
+    y = cos(dec[[i]] * pi / 180) * sin(ra[[i]] * pi / 180)
+    z = sin(dec[[i]] * pi / 180)
     return(c(x, y, z))
   }, ra, dec)
   
@@ -73,7 +80,11 @@ equatorial.to.cartesian <- function(ra, dec=NULL){
 #  return(event.positions)
 #}
 
+
+#currently only calculates the radiant of two given events.
+#need an optimized way to calculating radiant for more than two events
 radiant <- function(event1, event2){
+  
   r1 <- equatorial.to.cartesian(event.equatorial(event1))
   r1.start <- r1[[1]]
   r1.end <- r1[[event.num_fr(event1)]]
@@ -82,8 +93,8 @@ radiant <- function(event1, event2){
   r2.start <- r2[[1]]
   r2.end <- r2[[event.num_fr(event2)]]
   
-  n1 <- normalize(cross.product(r1.start, r1.end))
-  n2 <- normalize(cross.product(r2.start, r2.end))
+  n1 <- cross.product(r1.start, r1.end)
+  n2 <- cross.product(r2.start, r2.end)
   
   rad <- normalize(cross.product(n1, n2))
   
@@ -114,3 +125,11 @@ radiant <- function(event1, event2){
   
   return(c(rad.ra, rad.dec))
 }
+
+#Input list of events
+#Take first two
+#Find radiant 
+#shift second event into the first event
+#Get next event
+
+#output list of radiants
