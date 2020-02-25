@@ -52,3 +52,16 @@ outlier.trim <- function(events, radiants, mode = NULL, nbins = 25, ...){
   
   return(events[-outliers])
 }
+
+bad.event.trim <- function(events, radiants, mode = NULL, nbins = 25, ...){
+  if(is.null(mode)){
+    radiant.hist <- hist2d(radiants, nbins = nbins, show = FALSE, ...)
+    mode <- mode2d(radiant.hist)
+  }
+  
+  radiants$ra <- center.on.point(radiants$ra, mode$ra, center = 180, 
+                                 wrap = TRUE)
+  
+  ra.threshold <- iqr.threshold(radiants$ra, ...)
+  dec.threshold <- iqr.threshold(radiants$dec, ...)
+}

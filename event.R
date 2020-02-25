@@ -521,13 +521,13 @@ setGeneric("event.az", def = function(events){
 setMethod("event.az", signature = "list", 
           definition = function(events){
             return(sapply(events, function(events){
-              return((450 - events@phi) %% 360)
+              return((90 - events@phi) %% 360)
             }))
           })
 
 setMethod("event.az", signature = "event", 
           definition = function(events){
-            return((450 - events@phi) %% 360)
+            return((90 - events@phi) %% 360)
           }
 )
 
@@ -538,14 +538,14 @@ setGeneric("event.julian.date", def = function(events){
 setMethod("event.julian.date", signature = "list", 
           definition = function(events){
             return(sapply(events, function(events){
-              julian.days <- julian(event.date(events), origin = as.POSIXct("01-01-01", tz = "UTC"))
+              julian.days <- 2440587.5 + julian(event.date(events), origin = as.POSIXct("1970-01-01", tz = "UTC"))
               return(as.numeric(julian.days))
             }))
           })
 
 setMethod("event.julian.date", signature = "event", 
           definition = function(events){
-            julian.days <- julian(event.date(events), origin = as.POSIXct("01-01-01", tz = "UTC"))
+            julian.days <- 2440587.5 + julian(event.date(events), origin = as.POSIXct("1970-01-01", tz = "UTC"))
             return(as.numeric(julian.days))
           }
 )
