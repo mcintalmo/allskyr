@@ -1,4 +1,4 @@
-﻿Quadrantids (010 QUA) Dec 28–Jan 12 Jan 04 283.16 230 +49 41 2.1 120
+Quadrantids (010 QUA) Dec 28–Jan 12 Jan 04 283.16 230 +49 41 2.1 120
 α-Centaurids (102 ACE) Jan 28–Feb 21 Feb 08 319.2 210 -59 56 2.0 6
 γ-Normids (118 GNO) Feb 25–Mar 28 Mar 15 354 239 -50 56 2.4 6
 Lyrids (006 LYR) Apr 16–Apr 25 Apr 22 32.32 271 +34 49 2.1 18
@@ -6,7 +6,7 @@ Lyrids (006 LYR) Apr 16–Apr 25 Apr 22 32.32 271 +34 49 2.1 18
 η-Aquariids (031 ETA) Apr 19–May 28 May 06 45.5 338 -01 66 2.4 40
 η-Lyrids (145 ELY) May 03–May 14 May 09 48.0 287 +44 43 3.0 3
 June Bootids (170 JBO) Jun 22–Jul 02 Jun 27 95.7 224 +48 18 2.2 Var
-Piscis Austr. (183 PAU) Jul 15–Aug 10 Jul 28 125 341 -30 35 3.2 5
+Piscis Austrinids (183 PAU) Jul 15–Aug 10 Jul 28 125 341 -30 35 3.2 5
 S. δ-Aquariids (005 SDA) Jul 12–Aug 23 Jul 30 127 340 -16 41 3.2 16
 α-Capricornids (001 CAP) Jul 03–Aug 15 Jul 30 127 307 -10 23 2.5 5
 Perseids (007 PER) Jul 17–Aug 24 Aug 13 140.0 48 +58 59 2.2 100
