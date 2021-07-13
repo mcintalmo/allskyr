@@ -65,6 +65,6 @@ euler= function(ai,bi,select, fk4=F,  radian=F) {
   ao =  atan2( ctheta[i] * cbsa + stheta[i] * sb, cb * cos(ao) )
   ao = ( (ao+psi[i]+fourpi) %% twopi) 
   if(!radian) ao = ao*rad_to_deg
-  browser()
+  #browser()
   return(list(ao=ao,bo=bo))
 }

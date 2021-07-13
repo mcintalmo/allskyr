@@ -1,7 +1,6 @@
 library(shiny)
 
-shinyServer(function(input, output){
-  
+shinyServer(function(input, output) {
   library(astrolibR)
   library(stringr)
   library(gplots)
@@ -14,133 +13,221 @@ shinyServer(function(input, output){
   source("radiant.R")
   source("shower.R")
   source("outlier.R")
+  source("fit.R")
   
   events <- load.events()
   showers <- load.showers()
   
-  data <- reactiveValues(shower = NULL, shower.events = NULL, radiants = NULL,
-                         n.events = NULL, n.outliers = NULL)
-
+  data <-
+    reactiveValues(
+      shower = NULL,
+      shower.events = NULL,
+      radiants = NULL,
+      n.events = NULL,
+      n.outliers = NULL
+    )
   
-  observeEvent(input$generate,{
-    print(str_match(input$name, ".*(?= \\()"))
-    data$shower <- find.shower(str_match(input$name, "[A-Z]{3}(?=\\))")[[1]], input$year, showers)
-    print(input$name)
-    print(str_match(input$name, "[A-Z]{3}(?=\\))")[[1]])
-    print(input$year)
-    print(data$shower)
-    print(identical(data$shower$name, character(0)))
-    if(identical(data$shower$name, character(0))){
-      data$n.events <- 0
-      return()
+  
+  get.shower.info <- function() {
+    shower.info <-
+      cbind(data$shower[c("name",
+                          "number",
+                          "abbrev",
+                          "start.date",
+                          "end.date",
+                          "peak.date")])
+    return(shower.info)
+  }
+  
+  get.radiant.info <- function() {
+    radiants <- data$radiants
+    nbins <- input$nbins
+    n.events <- data$n.events
+    n.outliers <- data$n.outliers
+    
+    radiant.hist <-
+      hist2d(
+        x = radiants$ra,
+        y = radiants$dec,
+        nbins = nbins,
+        show = FALSE
+      )
+    c <- 1 / n.events * sum(cos(radiants$ra * pi / 180))
+    s <- 1 / n.events * sum(sin(radiants$ra * pi / 180))
+    
+    if (c < 0) {
+      mean.ra <- (atan(s / c) + pi) * 180 / pi
+    }
+    else{
+      mean.ra <- atan(s / c) * 180 / pi
     }
     
-    data$shower.events <- find.events(data$shower$start.date,
-                                      data$shower$end.date, 
-                                      events)
-    data$n.events <- length(data$shower.events)
+    mean.dec <-
+      mean(radiants$dec) #Should probably be adjusted based on histogram mode
     
-    if(file.exists(paste("./save-files/radiants/", data$shower$abbrev, 
-                         substr(data$shower$start.date, 1, 4), ".txt", sep=""))){
+    
+    return(cbind(
+      data$shower[c("theo.ra", "theo.dec")],
+      mean.ra,
+      mean.dec,
+      mode2d(radiant.hist),
+      n.events,
+      n.outliers
+    ))
+  }
+  
+  observeEvent(c(input$name, input$year), {
+    data$shower <-
+      find.shower(str_match(input$name, "[A-Z]{3}(?=\\))")[[1]],
+                  input$year,
+                  showers)
+    print(data$shower)
+    if (identical(data$shower$name, character(0))) {
+      message("No shower found with name: ",
+              input$name,
+              " for year",
+              input$year)
+      data$shower.events <- NULL
+      radiants <- NULL
+    }
+    else{
+      data$shower.events <- find.events(data$shower$peak.date,
+                                        data$shower$peak.date,
+                                        events)
+    }
+    data$n.events <- length(data$shower.events)
+  })
+  
+  
+  observeEvent(c(
+    input$name,
+    input$year,
+    input$aggression,
+    input$remove.antiradiants
+  ),
+  {
+    if (file.exists(paste(
+      "./save-files/radiants/",
+      data$shower$abbrev,
+      substr(data$shower$start.date, 1, 4),
+      ".txt",
+      sep = ""
+    ))) {
       data$radiants <- load.radiant(data$shower)
     } else{
       data$radiants <- shower.radiant(data$shower.events)
     }
     
-    if(input$remove.outlier.intersections){
-      #data$shower.events <- outlier.trim(data$shower.events,
-      #                                  data$radiants,
-      #                                  nbins = input$nbins,
-      #                                  multiplier = input$iqr)
-      
-      #data$radiants <- shower.radiant(data$shower.events)
-      
-      #data$n.outliers <- data$n.events - length(data$shower.events)
-      data$n.outlier.intersections <- nrow(data$radiants[data$radiants$antirad < 0,])
-      data$radiants <- data$radiants[data$radiants$antirad >= 0,]
+    aggression <- 0.01 * input$aggression
+    if (aggression > 0 && data$n.events > 2) {
+      suspected.events <- suspect.events(
+        data$shower,
+        remove.antiradiant = input$remove.antiradiants,
+        aggression = aggression
+      )
+      data$radiants <- remove.event(data$radiants, suspected.events)
+      data$n.outliers <- length(suspected.events)
       
     } else{
-      data$n.outlier.intersections <- 0
+      data$n.outliers <- 0
     }
-    data$n.intersections <- nrow(data$radiants)
+    if (is.null(data$radiants))
+      data$n.intersections <- 0
+    else
+      data$n.intersections <- nrow(data$radiants)
   })
   
+  
   output$radiant.plot <- renderPlot({
-    if(is.null(data$shower) || is.null(data$shower.events) 
-       || is.null(data$radiants) || data$n.events < 2) {
-      return()
-    }
+    validate(need(!is.null(data$shower), "Shower not found."))
+    validate(need(
+      !is.null(data$shower.events),
+      "No events found during this shower."
+    ))
+    validate(need(
+      !is.null(data$radiants),
+      "Not enough events found during this shower to produce a radiant."
+    ))
+    validate(
+      need(
+        data$n.events - data$n.outliers > 2,
+        "Too many outliers found. Aggression set too high."
+      )
+    )
     
-    shower <- data$shower
-    shower.events <- data$shower.events
-    radiants <- data$radiants
-    
-    ggplot(radiants, aes(radiants$ra, radiants$dec)) + 
-      stat_bin2d(bins = input$nbins) + 
-      ggtitle(paste(substr(shower$start.date, 1, 4), " ", shower$name, 
-                    " (", shower$number, " ", shower$abbrev, ") ", sep = "")) + 
+    ggplot(data$radiants, aes(data$radiants$ra, data$radiants$dec)) +
+      stat_bin2d(bins = input$nbins) +
+      ggtitle(
+        paste(
+          substr(data$shower$start.date, 1, 4),
+          " ",
+          data$shower$name,
+          " (",
+          data$shower$number,
+          " ",
+          data$shower$abbrev,
+          ") ",
+          sep = ""
+        )
+      ) +
       labs(x = "Right Ascension (Degrees)", y = "Declination (Degrees)")
   })
   
-  #output$ra.plot <- renderPlot({
-  #  if(is.null(data$shower) || is.null(data$shower.events) 
-  #     || is.null(data$radiants) || data$n.events < 2) {
-  #    return()
-  #  }
-  #  shower <- data$shower
-  #  shower.events <- data$shower.events
-  #  radiants <- data$radiants
-  #  
-  #  ggplot(radiants$ra, aes)
-  #  
-  #})
   
-  output$shower.info <- renderTable(
+  output$shower.table <- renderTable(if (is.null(data$shower) ||
+                                         is.null(data$radiants) ||
+                                         (data$n.events - data$n.outliers) < 3) {
+    return()
+  }
+  else{
+    get.shower.info()
+  })
+  
+  output$radiant.table <- renderTable(if (is.null(data$shower) ||
+                                          is.null(data$radiants) ||
+                                          (data$n.events - data$n.outliers) < 3) {
+    return()
+  }
+  else{
+    get.radiant.info()
+  })
+  
+  
+  output$event.info <- renderText(if (data$n.events > 0)
+    paste("Number of events: ", data$n.events))
+  
+  
+  output$intersect.info <- renderText(if (data$n.events > 0)
+    paste("Number of intersections: ", data$n.intersections))
+  
+  
+  output$outlier.info <- renderText(if (data$n.events > 0)
+    paste("Number of outlier events:", data$n.outliers))
+  
+  
+  observeEvent(input$save, {
+    # Shower name of the form XXXYYYYAGGXX,
+    #   where xxx is the abbreviation, YYYY is the year
+    shower.name <- paste0(data$shower["abbrev"],
+                          substr(data$shower["start.date"], 1, 4),
+                          if (aggression < 10)
+                            paste0("0"),
+                          aggression)
     
-    if(is.null(data$shower) || is.null(data$radiants) || data$n.events < 3){
-      return()
-    } 
-    else{
-      radiants <- data$radiants
-      radiant.hist <- hist2d(x=radiants$ra, y=radiants$dec, nbins = input$nbins, show = FALSE)
-      c <- 1 / data$n.events * sum(cos(radiants$ra * pi / 180))
-      s <- 1 / data$n.events * sum(sin(radiants$ra * pi / 180))
-      
-      if(c < 0){
-        mean.ra <- (atan(s / c) + pi) * 180 / pi
-      }
-      else{
-        mean.ra <- atan(s / c) * 180 / pi
-      }
-      
-      mean.dec <- mean(radiants$dec)
-      
-      cbind(data$shower[c("name", "number", "abbrev", "start.date", "end.date", "peak.date", 
-                  "theo.ra", "theo.dec")], mean.ra, mean.dec, mode2d(radiant.hist))
-    }
-  )
-  
-  output$event.info <- renderText(
-    if(is.null(data$n.events)){
-      return()
-    }
-    else{
-      #n.intersections <- as.numeric(data$n.events * data$n.events - data$n.events)/2
-      paste(data$shower["name"], " radiant computation complete.          
-            Number of events: ", data$n.events, "Number of intersects: ", 
-            data$n.intersections)
-    }
-  )
-  
-  output$outlier.info <- renderText(
-    if(!input$remove.outlier.intersections){
-      return()
-    }
-    else{
-      paste("Number of outlier intersections:", data$n.outlier.intersections)
-    }
-  )
-  
-  
-  #Mode, number of outliers, shower info
+    # Create the directory to save the plot and data (./plots/shower.name)
+    save.dir <- paste0("./plots/", shower.name)
+    dir.create(save.dir)
+    
+    #File to save most recently generated ggplot, what is currently displayed
+    plot.file <- paste0(save.dir, "/", shower.name, ".png")
+    ggsave(plot.file)
+    
+    # File to save the relavent information
+    info.file <- paste0(save.dir, "/", shower.name, ".txt")
+    info <- cbind(get.shower.info(), get.radiant.info())
+    write.table(info,
+                file = info.file,
+                sep = "\t",
+                row.names = FALSE)
+  })
 })

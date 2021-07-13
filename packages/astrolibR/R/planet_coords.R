@@ -38,7 +38,7 @@ planet_coords = function( date, planet=planet, jd = FALSE) {
     lone = as.numeric(tmp$hlong)
     late = as.numeric(tmp$hlat)
 
-    browser("End")
+    #browser("End")
     x = rad * cos(lat) * cos(lon) - rade * cos(late) * cos(lone)
     y = rad * cos(lat) * sin(lon) - rade * cos(late) * sin(lone)
     z = rad * sin(lat)            - rade * sin(late)
