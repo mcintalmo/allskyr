@@ -15,11 +15,10 @@ ensure.package("ggplot2")
 ensure.package("shiny")
 ensure.package('Directional')
 ensure.package("dplyr")
+ensure.package("xtable")
 
 
 source("event.R")
 source("import.R")
 source("radiant.R")
-source("shower.R")
 source("outlier.R")
-source("fit.R")

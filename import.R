@@ -7,6 +7,7 @@ read.event <- function(event.file, verbose = TRUE) {
   event.name <- sub(".*/", event.file, replacement = "")
   event.name <- sub("\\.txt", event.name, replacement = "")
   
+  # specifically search through commented (#) text for meta data
   meta <-
     read.delim(
       event.file,
@@ -49,6 +50,7 @@ read.event <- function(event.file, verbose = TRUE) {
     cat("Read\n")
   }
   
+  # Parse the data into an event object and return it
   return(
     event(
       name = event.name,
@@ -83,9 +85,9 @@ read.event <- function(event.file, verbose = TRUE) {
   )
 }
 
+# Returns a list containing all event objects parsed from the given folder
 get.events <- function(events.path = "./events",
-                       verbose = TRUE,
-                       save.file = "./save-files/events.sav") {
+                       verbose = TRUE) {
   if (verbose)
     cat("Reading events from", events.path, "\n")
   event.files <- list.files(
@@ -104,13 +106,14 @@ get.events <- function(events.path = "./events",
   if (verbose) {
     cat("Events found in",
         events.path,
-        "read.The following events were rejected:\n\t")
+        "read. The following events were rejected:\n\t")
     cat(event.file(events[rejected]), sep = "\n\t")
   }
   
   return(events)
 }
 
+# Save a list of events to externally
 save.events <-
   function(events,
            save.file = "./save-files/events.sav",
@@ -123,6 +126,7 @@ save.events <-
     ))
   }
 
+# Load a list of events from a file
 load.events <-
   function(load.file = "./save-files/events.sav",
            verbose = TRUE) {
@@ -130,6 +134,7 @@ load.events <-
     return(events)
   }
 
+# Parses and saves events to an external file
 update.events <-
   function(save.file = "./save-files/events.sav/",
            verbose = TRUE) {
@@ -323,28 +328,25 @@ update.showers <-
   }
 
 # Import and Create and Export Radiant Files ----------------------------------
-get.radiant <-
-  function(shower,
-           radiant.path = "./save-files/radiants/",
-           verbose = TRUE) {
-    shower.name <-
-      paste(shower$abbrev, substr(shower$start.date, 1, 4), sep = "")
-    if (verbose)
-      cat("Getting radiants for ", shower.name, " . . . ")
-    shower.events <-
-      find.events(shower$start.date, shower$end.date, events)
-    if (length(shower.events) < 2) {
-      if (verbose)
-        message("Not enough events provided to produce radiant.\n")
-      return()
-    }
-    else{
-      radiant <- shower.radiant(shower.events)
-      if (verbose)
-        cat("X\n")
-      return(radiant)
-    }
+get.radiant <- function(shower, verbose = TRUE) {
+  shower.name <- paste(shower$abbrev, substr(shower$start.date, 1, 4), sep = "")
+  if (verbose){
+    cat("Getting radiants for ", shower.name, " . . . ")
   }
+  shower.events <- find.events(events, shower$peak.date)
+  if (length(shower.events) < 2) {
+    if (verbose){
+      message("Not enough events provided to produce radiant.\n")
+    }
+    return()
+  }
+  else{
+    radiant <- shower.radiants(shower.events)
+    if (verbose)
+      cat("X\n")
+    return(radiant)
+  }
+}
 
 save.radiant <- function(shower,
                          radiant = get.radiant(shower),
@@ -391,14 +393,18 @@ update.radiant.files <-
            refresh.showers = FALSE,
            radiant.path = "./save-files/radiants/",
            verbose = TRUE) {
-    if (refresh.events)
+    if (refresh.events){
       events <- get.events()
-    else
+    }
+    else {
       events <- load.events()
-    if (refresh.showers)
+    }
+    if (refresh.showers){
       showers <- get.showers()
-    else
+    }
+    else {
       showers <- load.showers()
+    }
     showers <- split(showers, seq(nrow(showers)))
     
     radiants <- lapply(showers, function(shower) {
@@ -413,7 +419,7 @@ update.radiant.files <-
       }
       
       if (overwrite &&
-          file.exists(shower.file))
+          file.exists(radiant.file))
         cat("Overwriting ", radiant.file, "\n")
       
       save.radiant(shower)

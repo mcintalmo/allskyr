@@ -91,9 +91,7 @@ shinyServer(function(input, output) {
       radiants <- NULL
     }
     else{
-      data$shower.events <- find.events(data$shower$peak.date,
-                                        data$shower$peak.date,
-                                        events)
+      data$shower.events <- find.events(events, data$shower$peak.date)
     }
     data$n.events <- length(data$shower.events)
   })
@@ -115,7 +113,7 @@ shinyServer(function(input, output) {
     ))) {
       data$radiants <- load.radiant(data$shower)
     } else{
-      data$radiants <- shower.radiant(data$shower.events)
+      data$radiants <- shower.radiants(data$shower.events)
     }
     
     aggression <- 0.01 * input$aggression
